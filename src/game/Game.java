@@ -5,14 +5,15 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.event.MouseAdapter;
 import java.awt.image.BufferStrategy;
+import java.util.LinkedList;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 public class Game implements Runnable{
 
-	final int WIDTH = 1000;
-	final int HEIGHT = 700;
+	static final int VIEW_WIDTH = 1000;
+	static final int VIEW_HEIGHT = 700;
 	long desiredFPS = 60;
 	long desiredDeltaLoop = (1000*1000*1000)/desiredFPS;
 
@@ -20,22 +21,24 @@ public class Game implements Runnable{
 	JFrame frame;
 	Canvas canvas;
 	BufferStrategy bufferStrategy;
-
+	LinkedList<RenderableObject> renderableObjects;
+	LinkedList<SpaceAwareObject> spaceAwareObjects;
+	
 	public Game(){
 		frame = new JFrame("Basic Game");
 
 		JPanel panel = (JPanel) frame.getContentPane();
-		panel.setPreferredSize(new Dimension(WIDTH, HEIGHT));
+		panel.setPreferredSize(new Dimension(VIEW_WIDTH, VIEW_HEIGHT));
 		panel.setLayout(null);
 
 		canvas = new Canvas();
-		canvas.setBounds(0, 0, WIDTH, HEIGHT);
+		canvas.setBounds(0, 0, VIEW_WIDTH, VIEW_HEIGHT);
 		canvas.setIgnoreRepaint(true);
 
 		panel.add(canvas);
 
 		canvas.addMouseListener(new MouseAdapter() {
-
+			// TODO: put mouse logic, the boat will go towards the mouse x
 		});
 
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -47,6 +50,12 @@ public class Game implements Runnable{
 		bufferStrategy = canvas.getBufferStrategy();
 
 		canvas.requestFocus();
+		
+		renderableObjects = new LinkedList<>();
+		spaceAwareObjects = new LinkedList<>();
+		// adding objects
+		Board board = new Board();
+		renderableObjects.add(board);
 
 	}
 
@@ -71,7 +80,7 @@ public class Game implements Runnable{
 			deltaLoop = endLoopTime - beginLoopTime;
 
 			if(deltaLoop > desiredDeltaLoop){
-				//Do nothing. We are already late.
+				System.err.println("Missed frame");
 			}else{
 				try{
 					Thread.sleep((desiredDeltaLoop - deltaLoop)/(1000*1000));
@@ -80,18 +89,22 @@ public class Game implements Runnable{
 				}
 			}
 		}
-
 	}
+	// TODO: remove this
 	private double x = 0;
 	private void render() {
 		Graphics2D g = (Graphics2D) bufferStrategy.getDrawGraphics();
-		g.clearRect(0, 0, WIDTH, HEIGHT);
+		g.clearRect(0, 0, VIEW_WIDTH, VIEW_HEIGHT);
 		render(g);
 		g.dispose();
 		bufferStrategy.show();
 	}
 
 	protected void render(Graphics2D g){
+		
+		for(RenderableObject renderableObject : renderableObjects){
+			renderableObject.render(g);
+		}
 		g.fillRect((int)x, 0, 200, 200);
 	}
 	protected void update(int deltaTime){
