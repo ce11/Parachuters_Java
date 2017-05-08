@@ -1,27 +1,28 @@
 package game;
 
-public abstract class SpaceAwareObject {
+import java.awt.image.BufferedImage;
 
-	protected float x, y, width, height;
-	
-	public float getWidth(){
+public abstract class Sprite {
+
+	protected int x, y, width, height;
+    BufferedImage image;
+
+	public int getWidth(){
 		return width;
 	}
 	
-	public float getHeight(){
+	public int getHeight(){
 		return height;
 	}
 	
-	public float getX(){
+	public int getX(){
 		return x;
 	}
 	
-	public float getY(){
+	public int getY(){
 		return y;
 	}
 	
-	protected abstract void onCollision(SpaceAwareObject other);
-	protected abstract void move();
-	protected abstract void didCollide(SpaceAwareObject other);
+	protected abstract void update();
 	
 }

@@ -7,7 +7,7 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-public class Board implements RenderableObject {
+public class Board implements Renderable {
     BufferedImage backdrop, sea = null;
     public Board(){
     	try{

@@ -1,22 +1,40 @@
 package game;
 
-public class Plane extends SpaceAwareObject {
+import java.awt.Graphics2D;
+import java.io.File;
+import java.io.IOException;
 
-	@Override
-	protected void onCollision(SpaceAwareObject other) {
-		// TODO Auto-generated method stub
+import javax.imageio.ImageIO;
+
+public class Plane extends Sprite implements Renderable {
+	private Game game;
+	private int planeSpeed = 2;
+	public Plane(Game game){
+		this.game = game;
+		try {
+			this.image = ImageIO.read(new File("C:\\Users\\home\\Documents\\ParachutersJava\\Parachuters_Java\\Resources\\plane.png"));
+			this.width = image.getWidth();
+			this.height = image.getHeight();
+			this.y = 0;
+			this.x = game.getWidth() - this.width;
+		} catch (IOException e) {
+			System.err.println(e.getMessage());
+		}
 		
 	}
 
 	@Override
-	protected void move() {
-		// TODO Auto-generated method stub
+	protected void update() {
+		this.x -= planeSpeed;
+		if(this.x <= 0){
+			this.x = game.getWidth() - this.width;
+		}
 		
 	}
 
 	@Override
-	protected void didCollide(SpaceAwareObject other) {
-		// TODO Auto-generated method stub
+	public void render(Graphics2D g) {
+		g.drawImage(image, this.x, this.y, null);
 		
 	}
 
