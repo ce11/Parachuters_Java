@@ -1,6 +1,6 @@
 package game;
 
 public interface Collidable {
-	public void onCollision(Collidable other);
+	public void onCollision(Sprite other);
 	public boolean didCollide(Sprite other);
 }

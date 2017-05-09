@@ -7,13 +7,11 @@ import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.event.MouseAdapter;
 import java.awt.image.BufferStrategy;
 import java.util.LinkedList;
-import java.util.function.Predicate;
+import java.util.List;
 
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 public class Game implements Runnable{
@@ -25,7 +23,7 @@ public class Game implements Runnable{
 	static final int INITAL_LFE_COUNT = 3; 
 	static final String GAME_OVER_TEXT = "GAME OVER";
 
-	private int spawnFrames = 100;
+	private int spawnFrames = 200;
 	private int timesSpawned = 0;
 	private int spawnCounter = 0;
 	private int lives = INITAL_LFE_COUNT;
@@ -36,16 +34,21 @@ public class Game implements Runnable{
 	JFrame frame;
 	Canvas canvas;
 	BufferStrategy bufferStrategy;
-	LinkedList<Renderable> renderableObjects;
-	LinkedList<Sprite> updateableObjects;
+	List<Renderable> renderableObjects;
+	List<Sprite> updateableObjects;
+	List<Sprite> parachuters;
 	private Plane plane;
 	private Boat boat;
 	private int score = 0;
+	Font defaultFont = new Font("Verdana", Font.BOLD, 12);
+	Font errorFont = new Font("Verdana", Font.BOLD, 40);
+	FontMetrics errorFontMetrics;
 	
 	public Game(){
 		frame = new JFrame("Basic Game");
 		renderableObjects = new LinkedList<>();
 		updateableObjects = new LinkedList<>();
+		parachuters = new LinkedList<>();
 		// adding objects
 		Board board = new Board();
 		renderableObjects.add(board);
@@ -127,14 +130,15 @@ public class Game implements Runnable{
 		g.dispose();
 		bufferStrategy.show();
 	}
-	Font defaultFont = new Font("Verdana", Font.BOLD, 12);
-	Font errorFont = new Font("Verdana", Font.BOLD, 40);
-	FontMetrics errorFontMetrics;
+
 	protected void render(Graphics2D g){
 		for(Renderable renderableObject : renderableObjects){
 			renderableObject.render(g);
 		}
 		// draw scores & lives
+		drawText(g);
+	}
+	private void drawText(Graphics2D g){
 		g.setFont(defaultFont);
 
 		g.drawString("SCORE: "+ score , 10, 30);
@@ -149,66 +153,97 @@ public class Game implements Runnable{
 
 			g.drawString(GAME_OVER_TEXT,  x, y);
 		}
-
 	}
 	protected void update(int deltaTime){
+		List<Sprite> toRemoveFromGame = new LinkedList<Sprite>();
 		for(Sprite sprite : updateableObjects){
 			sprite.update();
+			// check if object left bounds, never to return
+			if(sprite.didLeavePlay()){
+				toRemoveFromGame.add(sprite);
+			}
 		}
-		//TODO should this get its own method?
+		// Removing sprites (parachuters)
+		destroySprite(toRemoveFromGame);
+
+		// Updating spawn counter 
+		if(shouldSpawn()){
+			spawnParachuter();
+		}
+		
+		
+	}
+	
+	private boolean shouldSpawn(){
 		spawnCounter++;
 		if(spawnCounter > spawnFrames && lives > 0){
 			spawnCounter = 0;
 			timesSpawned++;
 			spawnFrames -= SPAWN_INCREASE_RATE / timesSpawned;
 			timesSpawned++;
-			spawnParachuter();
+			return true;
 		}
+		return false;
 	}
-
-	private void removeLife(){
+	
+	public void removeLife(){
 		lives--;
 		if(lives <= 0){
 			// removing all parachuters
 			renderableObjects.removeIf((Renderable i)->{return i instanceof Parachuter;});
 			updateableObjects.removeIf((Sprite i)->{return i instanceof Parachuter;});
+			parachuters = new LinkedList<>();
 		}
 	}
 	
-	private void addPoints(){
+	public void addPoints(){
 		score += SCORE_INCREMENT;
 	}
+	
+	public void addPoints(int count){
+		score += SCORE_INCREMENT * count;
+	}
+	
 	protected void checkCollisions(){
 		// Find if boat collides with parachuters
 		// TODO make this global and clear each time?
-		LinkedList<Sprite> toRemove = new LinkedList<>();
+		boat.didCollide(parachuters);
 		
-		for(Sprite sprite: updateableObjects){
-			// check is collideable and not boat
-			if(sprite instanceof Collidable && !(sprite instanceof Boat)){
-				if(boat.didCollide(sprite)){
-					// TODO should this happen inside the parachuter?
-					toRemove.add(sprite);
-					addPoints();
-				}
-				if(sprite.getY() + sprite.getHeight() > VIEW_HEIGHT){
-					toRemove.add(sprite);
-					removeLife();
-				}
-			}
-		}
-		updateableObjects.removeAll(toRemove);
-		renderableObjects.removeAll(toRemove);
-		
+//		for(Sprite sprite: updateableObjects){
+//			// check is collideable and not boat
+//			if(sprite instanceof Collidable && !(sprite instanceof Boat)){
+//
+//				if(sprite.getY() + sprite.getHeight() > VIEW_HEIGHT){
+//					toRemove.add(sprite);
+//					removeLife();
+//				}
+//			}
+//		}
+//		updateableObjects.removeAll(toRemove);
+//		renderableObjects.removeAll(toRemove);
 	}
+	
 	// TODO should this be a method of plane?
+	// Method to spawn parachuter
 	private void spawnParachuter(){
 		Parachuter parachuter = new Parachuter(this, plane.getX());
 		renderableObjects.add(parachuter);
 		updateableObjects.add(parachuter);
-		
+		parachuters.add(parachuter);		
 	}
 	
+	// Method to destroy parachuter
+	public void destroySprite(Sprite sprite){
+		parachuters.remove(sprite);
+		updateableObjects.remove(sprite);
+		renderableObjects.remove(sprite);
+	}
+	
+	public void destroySprite(List<Sprite> spritesToDestroy){
+		this.parachuters.removeAll(spritesToDestroy);
+		updateableObjects.removeAll(spritesToDestroy);
+		renderableObjects.removeAll(spritesToDestroy);
+	}
 	public int getWidth(){
 		return VIEW_WIDTH;
 	}

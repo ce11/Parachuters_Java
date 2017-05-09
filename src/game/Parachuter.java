@@ -6,9 +6,11 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-public class Parachuter extends Sprite implements Renderable, Collidable{
+public class Parachuter extends Sprite implements Renderable{
 	private int dropSpeed = 1;
+	private Game game;
 	public Parachuter(Game game, int startX) {
+		this.game = game;
 		this.x = startX;
 		try {
 			this.image = ImageIO.read(new File("C:\\Users\\home\\Documents\\ParachutersJava\\Parachuters_Java\\Resources\\parachutist.png"));
@@ -22,25 +24,19 @@ public class Parachuter extends Sprite implements Renderable, Collidable{
 	@Override
 	protected void update() {
 		this.y += dropSpeed;
-		
 	}
 
 	@Override
-	public void onCollision(Collidable other) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public boolean didCollide(Sprite other) {
-		// TODO Auto-generated method stub
+	public boolean didLeavePlay() {
+		if(this.y + this.height >= game.getHeight()){
+			game.removeLife();
+			return true;
+		}
 		return false;
 	}
-
+	
 	@Override
 	public void render(Graphics2D g) {
-		g.drawImage(image, this.x, this.y, null);
-		
+		g.drawImage(image, this.x, this.y, null);		
 	}
-
 }

@@ -23,6 +23,9 @@ public abstract class Sprite {
 		return y;
 	}
 	
+	public boolean didLeavePlay(){
+		return false;
+	}
 	protected abstract void update();
 	
 }

@@ -1,16 +1,14 @@
 package game;
 
 import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.Rectangle;
-import java.awt.Shape;
 import java.awt.event.KeyEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-
+import java.util.LinkedList;
+import java.util.List;
 import javax.imageio.ImageIO;
 
 public class Boat extends Sprite implements Renderable, Collidable{
@@ -29,6 +27,7 @@ public class Boat extends Sprite implements Renderable, Collidable{
 		}
 		this.x = game.getWidth()/2;
 	}
+	
 	@Override
 	protected void update() {
 		// TODO Auto-generated method stub
@@ -52,24 +51,37 @@ boolean isFacingRight = false;
 		image = op.filter(image, null);
 		isFacingRight = !isFacingRight;
 	}
+	
 	@Override
-	public void onCollision(Collidable other) {
-		// TODO Auto-generated method stub
-		
+	public void onCollision(Sprite other) {
+		game.addPoints();
+		// TODO: should this be here
+		if(other instanceof Parachuter){
+			game.destroySprite((Parachuter)other);
+		}
 	}
 
 	@Override
 	public boolean didCollide(Sprite other) {
-		 Rectangle r = new Rectangle(this.x, this.y, this.width, this.height);
-		 Rectangle p = new Rectangle(other.getX(), other.getY(), other.getWidth(), other.getHeight());
-		 if (r.intersects(p)){			
-			 return true;
-		 }
-		 else{
-			 return false;
-		 }
+		 Rectangle myRect = new Rectangle(this.x, this.y, this.width, this.height);
+		 Rectangle otherRect = new Rectangle(other.getX(), other.getY(), other.getWidth(), other.getHeight());
+		 return myRect.intersects(otherRect);
 	}
 
+	public void didCollide(List<Sprite> otherSprites){
+		List<Sprite> toDestroy = new LinkedList<Sprite>();
+		for(Sprite sprite : otherSprites){
+			if(this.didCollide(sprite) && sprite instanceof Parachuter){
+				toDestroy.add((Parachuter)sprite);
+				System.out.println("bam");
+			}
+		}
+		if(toDestroy.size() > 0){
+			game.addPoints(toDestroy.size());
+			game.destroySprite(toDestroy);	
+		}		
+	}
+	
 	@Override
 	public void render(Graphics2D g) {
 		g.drawImage(image, this.x, this.y, null);
