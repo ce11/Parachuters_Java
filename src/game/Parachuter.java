@@ -7,6 +7,7 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 public class Parachuter extends Sprite implements Renderable{
+	static final int STARTING_HEIGHT = 40;
 	private int dropSpeed = 1;
 	private Game game;
 	public Parachuter(Game game, int startX) {
@@ -16,7 +17,7 @@ public class Parachuter extends Sprite implements Renderable{
 			this.image = ImageIO.read(new File("C:\\Users\\home\\Documents\\ParachutersJava\\Parachuters_Java\\Resources\\parachutist.png"));
 			this.height = image.getHeight();
 			this.width = image.getWidth();
-			this.y = 40;
+			this.y = STARTING_HEIGHT;
 		} catch (IOException e) {
 			System.err.println(e.getMessage());
 		}

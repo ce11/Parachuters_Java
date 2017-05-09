@@ -8,6 +8,7 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 public class Board implements Renderable {
+	static final int SEA_HEIGHT = 600;
     BufferedImage backdrop, sea = null;
     public Board(){
     	try{
@@ -21,7 +22,7 @@ public class Board implements Renderable {
 	public void render(Graphics2D g) {
 		
 		g.drawImage(backdrop, 0, 0, null);
-		g.drawImage(sea, 0, 600, null);
+		g.drawImage(sea, 0, SEA_HEIGHT, null);
 	}
 
 }
