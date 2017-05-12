@@ -12,8 +12,8 @@ public class Board implements Renderable {
     BufferedImage backdrop, sea = null;
     public Board(){
     	try{
-    		backdrop = ImageIO.read(new File("C:\\Users\\home\\Documents\\ParachutersJava\\Parachuters_Java\\Resources\\background.png"));
-    		sea = ImageIO.read(new File("C:\\Users\\home\\Documents\\ParachutersJava\\Parachuters_Java\\Resources\\sea.png"));
+    		backdrop = ImageIO.read(new File("./Resources/background.png"));
+    		sea = ImageIO.read(new File("./Resources/sea.png"));
     	}catch(IOException ex){
     		System.out.println("Failed to load board resources");
     	}

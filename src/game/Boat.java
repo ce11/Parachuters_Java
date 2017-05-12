@@ -22,7 +22,7 @@ public class Boat extends Sprite implements Renderable, Collidable {
 		this.game = game;
 		try {
 			this.image = ImageIO.read(
-					new File("C:\\Users\\home\\Documents\\ParachutersJava\\Parachuters_Java\\Resources\\boat.png"));
+					new File("./Resources/boat.png"));
 			this.width = image.getWidth();
 			this.height = image.getHeight();
 			this.y = game.getHeight() - this.height;

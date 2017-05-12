@@ -14,7 +14,7 @@ public class Parachuter extends Sprite implements Renderable{
 		this.game = game;
 		this.x = startX;
 		try {
-			this.image = ImageIO.read(new File("C:\\Users\\home\\Documents\\ParachutersJava\\Parachuters_Java\\Resources\\parachutist.png"));
+			this.image = ImageIO.read(new File("./Resources/parachutist.png"));
 			this.height = image.getHeight();
 			this.width = image.getWidth();
 			this.y = STARTING_HEIGHT;

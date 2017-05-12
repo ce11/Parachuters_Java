@@ -14,7 +14,7 @@ public class Plane extends Sprite implements Renderable {
 		this.game = game;
 		try {
 			this.image = ImageIO.read(
-					new File("C:\\Users\\home\\Documents\\ParachutersJava\\Parachuters_Java\\Resources\\plane.png"));
+					new File("./Resources/plane.png"));
 			this.width = image.getWidth();
 			this.height = image.getHeight();
 			this.y = 0;
